@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Habita · Comprender sin ruido</title>
+  <meta name="description" content="Habita es un espacio de reflexión y calma frente al exceso de ruido. Para comprender sin prisa o, simplemente, disfrutar del silencio.">
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- TailwindCSS desde CDN -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            papel:  'var(--papel)',
+            hondo:  'var(--hondo)',
+            tinta:  'var(--tinta)',
+            suave:  'var(--suave)',
+            musgo:  'var(--musgo)',
+            piedra: 'var(--piedra)',
+            liquen: 'var(--liquen)'
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'Times New Roman', 'serif'],
+            sans:  ['Figtree', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Paleta: niebla sobre agua quieta */
+    :root {
+      --papel:  #E4E8E4;  /* niebla */
+      --hondo:  #D6DCD6;  /* niebla densa */
+      --tinta:  #1D2927;  /* agua de estanque */
+      --suave:  #4B5A56;  /* texto secundario */
+      --musgo:  #56684F;  /* acento */
+      --piedra: #AEB6AD;  /* líneas */
+      --liquen: #CFD9B8;  /* resaltado */
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --papel:  #141B1A;
+        --hondo:  #1C2523;
+        --tinta:  #E2E8E1;
+        --suave:  #A7B2AC;
+        --musgo:  #A8BC9C;
+        --piedra: #3A4643;
+        --liquen: #3F4C36;
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --papel:  #141B1A; --hondo: #1C2523; --tinta: #E2E8E1; --suave: #A7B2AC;
+      --musgo:  #A8BC9C; --piedra: #3A4643; --liquen: #3F4C36; color-scheme: dark;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body { background: var(--papel); color: var(--tinta); }
+    ::selection { background: var(--liquen); }
+
+    :focus-visible { outline: 2px solid var(--musgo); outline-offset: 3px; border-radius: 4px; }
+
+    /* Titular del hero: aparece despacio, una sola vez */
+    .despacio { opacity: 0; transform: translateY(12px); animation: aparecer 2.4s cubic-bezier(.2,.6,.2,1) forwards; }
+    .despacio.d2 { animation-delay: .9s; }
+    .despacio.d3 { animation-delay: 1.6s; }
+    @keyframes aparecer { to { opacity: 1; transform: none; } }
+
+    /* Imagen que no se encuentra: muestra el nombre del archivo que falta */
+    figure.sin-imagen { display: flex; align-items: center; justify-content: center; }
+    figure.sin-imagen::after {
+      content: "Falta la imagen: " attr(data-archivo);
+      font: 500 0.85rem 'Figtree', sans-serif; color: var(--suave); padding: 1rem; text-align: center;
+    }
+    figure.hero-foto.sin-imagen::after { content: none; }
+
+    /* Círculo de respiración */
+    #circulo { transition: transform 4s ease-in-out, background-color 1s; }
+
+    /* Campos del formulario */
+    .campo {
+      width: 100%; background: transparent; color: var(--tinta);
+      border: 0; border-bottom: 1px solid var(--piedra);
+      padding: .75rem 0; font-size: 1.125rem; font-family: 'Newsreader', Georgia, serif;
+    }
+    .campo:focus { outline: none; border-bottom-color: var(--musgo); }
+    .campo::placeholder { color: var(--suave); opacity: .7; }
+    select.campo option { background: var(--papel); color: var(--tinta); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .despacio { animation: none; opacity: 1; transform: none; }
+      #circulo { transition: none; }
+    }
+  </style>
+</head>
+
+<body class="font-serif antialiased">
+
+  <!-- ============ CABECERA ============ -->
+  <header id="cabecera" class="fixed top-0 inset-x-0 z-40 transition-colors duration-500" style="padding-top: env(safe-area-inset-top, 0px);">
+    <nav class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <a href="#inicio" class="text-2xl font-light tracking-tight text-[#EEF1EC] transition-colors duration-500" id="logo">Habita</a>
+
+      <ul class="hidden lg:flex items-center gap-7 font-sans text-sm text-[#EEF1EC] transition-colors duration-500" id="menu-escritorio">
+        <li><a class="hover:underline underline-offset-4" href="#manifiesto">Manifiesto</a></li>
+        <li><a class="hover:underline underline-offset-4" href="#habito">El hábito</a></li>
+        <li><a class="hover:underline underline-offset-4" href="#escucha">La escucha</a></li>
+        <li><a class="hover:underline underline-offset-4" href="#comunidad">La comunidad</a></li>
+        <li><a class="hover:underline underline-offset-4" href="#desconecta">Desconecta</a></li>
+        <li><a class="hover:underline underline-offset-4" href="#nos-vemos">Nos vemos</a></li>
+        <li><a class="rounded-full border border-current px-4 py-1.5 hover:bg-[#EEF1EC] hover:text-[#1D2927]" href="#contacto">Escríbenos</a></li>
+      </ul>
+
+      <button id="boton-menu" class="lg:hidden font-sans text-sm text-[#EEF1EC] border border-current rounded-full px-4 py-1.5 transition-colors duration-500" aria-expanded="false" aria-controls="menu-movil">Menú</button>
+    </nav>
+
+    <!-- Menú móvil -->
+    <div id="menu-movil" class="hidden lg:hidden bg-papel border-t border-piedra">
+      <ul class="px-5 py-4 space-y-1 font-sans text-base text-tinta">
+        <li><a class="block py-2" href="#manifiesto">Manifiesto</a></li>
+        <li><a class="block py-2" href="#habito">El hábito</a></li>
+        <li><a class="block py-2" href="#escucha">La escucha</a></li>
+        <li><a class="block py-2" href="#comunidad">La comunidad educada</a></li>
+        <li><a class="block py-2" href="#desconecta">Desconecta</a></li>
+        <li><a class="block py-2" href="#nos-vemos">Nos vemos</a></li>
+        <li><a class="block py-2 text-musgo font-medium" href="#contacto">Escríbenos</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ HERO ============ -->
+    <section id="inicio" class="relative min-h-[100svh] flex items-end overflow-hidden bg-[#2A3532]">
+      <figure class="absolute inset-0 m-0 hero-foto" data-archivo="silla-estanque.jpg">
+        <img src="silla-estanque.jpg"
+             alt="Una silla vacía en medio de un estanque en calma, en blanco y negro"
+             class="w-full h-full object-cover grayscale"
+             onerror="this.parentElement.classList.add('sin-imagen'); this.remove();">
+      </figure>
+      <!-- Velo para que el texto se lea siempre -->
+      <div class="absolute inset-0 bg-gradient-to-t from-[#141B1A] via-[#141B1A]/40 to-transparent"></div>
+
+      <div class="relative w-full max-w-6xl mx-auto px-5 sm:px-8 pb-16 sm:pb-24 pt-32 text-[#EEF1EC]">
+        <h1 class="despacio font-light leading-[0.95] tracking-tight text-[clamp(3.2rem,10vw,8.5rem)] max-w-4xl">
+          Haz menos.<br>Más despacio.
+        </h1>
+        <p class="despacio d2 mt-8 max-w-xl text-xl sm:text-2xl font-light leading-relaxed text-[#D7DDD6]">
+          Tenemos más información que nunca y menos tiempo para comprenderla. Habita es un lugar para entender sin ruido o, simplemente, para disfrutar del silencio.
+        </p>
+        <div class="despacio d3 mt-10 flex flex-wrap items-center gap-6">
+          <a href="#manifiesto" class="inline-block font-sans font-medium bg-[#EEF1EC] text-[#1D2927] rounded-full px-8 py-4 text-base hover:bg-[#CFD9B8] transition-colors">
+            Accede a nuestro manifiesto
+          </a>
+          <a href="#habito" class="font-sans text-sm text-[#D7DDD6] underline underline-offset-4 hover:text-white">Ver qué hay dentro</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MANIFIESTO ============ -->
+    <section id="manifiesto" class="py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8 grid lg:grid-cols-12 gap-12">
+        <div class="lg:col-span-4">
+          <h2 class="text-5xl sm:text-6xl font-light tracking-tight">Manifiesto</h2>
+          <p class="mt-6 font-sans text-sm text-suave max-w-xs">Lo que creemos, en pocas líneas. Léelo sin prisa.</p>
+        </div>
+        <div class="lg:col-span-8 space-y-8 text-2xl sm:text-[1.7rem] font-light leading-[1.5] max-w-[38ch] lg:max-w-none">
+          <p>Vivimos saturados de información y hambrientos de significado. Cada día recibimos miles de estímulos, opiniones y titulares diseñados para captar nuestra atención.</p>
+          <p>No queremos competir por ella. Queremos devolvértela.</p>
+          <p class="text-suave">Aquí no hay notificaciones, ni contadores de seguidores, ni prisa por estar al día. No te vas a perder nada importante por ir más despacio.</p>
+          <p>Habita es la plataforma contra el FOMO. Porque para detener el tiempo hay que hacer menos cosas, y hacerlas más despacio.</p>
+          <p class="italic text-musgo">Entra cuando quieras. Sal cuando lo necesites.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EL HÁBITO ============ -->
+    <section id="habito" class="bg-hondo py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <figure class="m-0 aspect-[4/5] overflow-hidden rounded-[2px] bg-piedra" data-archivo="elhabito-libro.jpg">
+          <img src="elhabito-libro.jpg" alt="Manos que sostienen un libro abierto iluminado por un rayo de luz"
+               class="w-full h-full object-cover" loading="lazy"
+               onerror="this.parentElement.classList.add('sin-imagen'); this.remove();">
+        </figure>
+        <div>
+          <h2 class="text-5xl sm:text-6xl font-light tracking-tight">El hábito</h2>
+          <p class="mt-6 text-xl leading-relaxed text-suave max-w-[34ch]">Una sola práctica cada vez: un libro, una película, un documental. Sin listas infinitas. Con tiempo para terminarla.</p>
+
+          <div class="mt-12 border-t border-piedra pt-8">
+            <p class="font-sans text-sm text-suave">La práctica de este mes</p>
+            <h3 class="mt-2 text-3xl font-normal">Leer un libro corto, de principio a fin</h3>
+            <p class="mt-4 text-lg leading-relaxed max-w-[44ch]">Veinte minutos al día durante dos semanas, siempre a la misma hora y con el teléfono en otra habitación. Al terminar, escribe una sola frase sobre lo que te queda del libro.</p>
+            <dl class="mt-8 grid grid-cols-2 gap-6 font-sans text-sm max-w-sm">
+              <div><dt class="text-suave">Duración</dt><dd class="mt-1 text-tinta font-medium">2 semanas</dd></div>
+              <div><dt class="text-suave">Cada día</dt><dd class="mt-1 text-tinta font-medium">20 minutos</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LA ESCUCHA ============ -->
+    <section id="escucha" class="py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="grid lg:grid-cols-12 gap-12">
+          <div class="lg:col-span-5">
+            <h2 class="text-5xl sm:text-6xl font-light tracking-tight">La escucha</h2>
+            <p class="mt-6 text-xl leading-relaxed text-suave max-w-[34ch]">Un podcast largo sobre un solo tema. Geopolítica, economía o psicología, contadas con calma y con quien de verdad sabe.</p>
+            <figure class="mt-10 m-0 aspect-[3/2] overflow-hidden rounded-[2px] bg-hondo" data-archivo="escucha-radio.jpg">
+              <!-- Para ver la radio en color, borra la palabra grayscale de la línea siguiente -->
+              <img src="escucha-radio.jpg" alt="Radio antigua sobre una pila de libros viejos"
+                   class="w-full h-full object-cover grayscale" loading="lazy"
+                   onerror="this.parentElement.classList.add('sin-imagen'); this.remove();">
+            </figure>
+          </div>
+
+          <div class="lg:col-span-7">
+            <article class="border border-piedra rounded-[2px] p-6 sm:p-10">
+              <p class="font-sans text-sm text-suave">Episodio en preparación · 58 minutos</p>
+              <h3 class="mt-3 text-3xl sm:text-4xl font-light leading-tight">Por qué todo parece urgente y casi nada lo es</h3>
+              <p class="mt-4 text-lg leading-relaxed text-suave max-w-[46ch]">Una conversación sobre cómo la economía de la atención ha cambiado nuestra forma de percibir el riesgo, la política y el tiempo.</p>
+
+              <!-- Onda decorativa -->
+              <svg class="mt-10 w-full h-16 text-musgo" viewBox="0 0 600 60" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0 30 Q 25 10 50 30 T 100 30 T 150 30 T 200 30 Q 225 22 250 30 T 300 30 Q 325 5 350 30 T 400 30 T 450 30 Q 475 18 500 30 T 550 30 T 600 30"
+                      fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M0 30 Q 37 45 75 30 T 150 30 T 225 30 T 300 30 T 375 30 T 450 30 T 525 30 T 600 30"
+                      fill="none" stroke="currentColor" stroke-width="1" opacity=".4"/>
+              </svg>
+
+              <div class="mt-8 flex flex-wrap gap-4 font-sans text-sm">
+                <a href="#contacto" data-motivo="Quiero que me aviséis de nuevos episodios" class="apuntarse rounded-full bg-tinta text-papel px-6 py-3 font-medium hover:bg-musgo transition-colors">Avísame cuando salga</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LA COMUNIDAD EDUCADA ============ -->
+    <section id="comunidad" class="bg-tinta text-papel py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+        <div>
+          <h2 class="text-5xl sm:text-6xl font-light tracking-tight">La comunidad educada</h2>
+          <p class="mt-6 text-xl leading-relaxed opacity-80 max-w-[34ch]">Un lugar para debatir una sola pregunta filosófica cada mes. Aquí se gana escuchando, no teniendo razón.</p>
+
+          <blockquote class="mt-12 text-3xl sm:text-4xl font-light italic leading-snug max-w-[22ch]">
+            ¿Se puede ser libre sin tiempo para pensar?
+          </blockquote>
+          <p class="mt-4 font-sans text-sm opacity-70">La pregunta de este mes</p>
+        </div>
+
+        <div>
+          <figure class="m-0 aspect-[16/10] overflow-hidden rounded-[2px] bg-[#2C3A37]" data-archivo="comunidad-abstract.jpg">
+            <img src="comunidad-abstract.jpg" alt="Red de figuras de madera con siluetas de personas conectadas entre sí"
+                 class="w-full h-full object-cover" loading="lazy"
+                 onerror="this.parentElement.classList.add('sin-imagen'); this.remove();">
+          </figure>
+
+          <h3 class="mt-10 text-2xl font-normal">Cómo conversamos</h3>
+          <ul class="mt-5 space-y-4 text-lg leading-relaxed opacity-90">
+            <li class="pl-5 border-l border-[#56684F]">Antes de responder, resume con tus palabras lo que ha dicho la otra persona.</li>
+            <li class="pl-5 border-l border-[#56684F]">Una intervención al día. Piénsala bien.</li>
+            <li class="pl-5 border-l border-[#56684F]">Se discuten ideas, nunca personas.</li>
+            <li class="pl-5 border-l border-[#56684F]">Está bien cambiar de opinión. Es, de hecho, el objetivo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DESCONECTA ============ -->
+    <section id="desconecta" class="py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <div class="lg:col-span-5">
+            <h2 class="text-5xl sm:text-6xl font-light tracking-tight">Desconecta</h2>
+            <p class="mt-6 text-xl leading-relaxed text-suave max-w-[34ch]">Prácticas sencillas de salud e higiene mental para usar la tecnología, y no al revés.</p>
+
+            <figure class="mt-10 m-0 aspect-[4/3] overflow-hidden rounded-[2px] bg-hondo" data-archivo="desconecta-telefono.jpg">
+              <img src="desconecta-telefono.jpg" alt="Mano relajada que deja caer un teléfono móvil sobre la alfombra"
+                   class="w-full h-full object-cover" loading="lazy"
+                   onerror="this.parentElement.classList.add('sin-imagen'); this.remove();">
+            </figure>
+          </div>
+
+          <div class="lg:col-span-7">
+            <!-- Ejercicio de respiración -->
+            <div class="bg-hondo rounded-[2px] p-6 sm:p-10 flex flex-col sm:flex-row items-center gap-10">
+              <div class="relative w-48 h-48 shrink-0 flex items-center justify-center">
+                <div id="circulo" class="w-24 h-24 rounded-full bg-liquen"></div>
+                <span id="texto-respira" class="absolute font-sans text-sm font-medium text-tinta" aria-live="polite">Listo</span>
+              </div>
+              <div>
+                <h3 class="text-3xl font-light">Un minuto para respirar</h3>
+                <p class="mt-3 text-lg leading-relaxed text-suave max-w-[36ch]">Inspira 4 segundos, mantén 4 y suelta el aire en 6. Sigue el círculo durante un minuto.</p>
+                <button id="boton-respira" class="mt-6 font-sans text-sm font-medium rounded-full bg-tinta text-papel px-6 py-3 hover:bg-musgo transition-colors">Empezar a respirar</button>
+              </div>
+            </div>
+
+            <!-- Prácticas -->
+            <div class="mt-12 grid sm:grid-cols-2 gap-x-10 gap-y-10">
+              <div>
+                <h3 class="text-2xl font-normal">La primera hora es tuya</h3>
+                <p class="mt-2 text-lg leading-relaxed text-suave">No mires el teléfono durante la primera hora del día. El mundo seguirá ahí.</p>
+              </div>
+              <div>
+                <h3 class="text-2xl font-normal">Notificaciones a cero</h3>
+                <p class="mt-2 text-lg leading-relaxed text-suave">Deja activas solo las de personas, nunca las de aplicaciones.</p>
+              </div>
+              <div>
+                <h3 class="text-2xl font-normal">Pantalla en gris</h3>
+                <p class="mt-2 text-lg leading-relaxed text-suave">Activa la escala de grises del móvil. Sin color, las aplicaciones pierden buena parte de su atractivo.</p>
+              </div>
+              <div>
+                <h3 class="text-2xl font-normal">El cargador fuera del dormitorio</h3>
+                <p class="mt-2 text-lg leading-relaxed text-suave">Un despertador de los de antes y el móvil cargando en otra habitación.</p>
+              </div>
+            </div>
+
+            <p class="mt-12 font-sans text-sm text-suave max-w-[50ch]">Abajo a la derecha verás cuánto tiempo llevas en Habita. Solo cuenta mientras tienes esta pestaña delante. Te avisaremos si llevas demasiado.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ NOS VEMOS ============ -->
+    <section id="nos-vemos" class="bg-hondo py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8">
+        <div class="max-w-2xl">
+          <h2 class="text-5xl sm:text-6xl font-light tracking-tight">Nos vemos</h2>
+          <p class="mt-6 text-xl leading-relaxed text-suave">Encuentros presenciales, pequeños y sin pantallas. Plazas limitadas para que se pueda hablar de verdad.</p>
+        </div>
+
+        <!-- Lista de encuentros: para cambiarlos, edita el texto de cada bloque <li> -->
+        <ul class="mt-14 border-t border-piedra">
+          <li class="py-8 border-b border-piedra grid sm:grid-cols-12 gap-4 sm:gap-8 items-baseline">
+            <p class="sm:col-span-3 font-sans text-sm"><span class="block text-2xl font-serif font-light">14 de noviembre</span><span class="text-suave">Sábado, 11:00</span></p>
+            <div class="sm:col-span-6">
+              <h3 class="text-2xl font-normal">Lectura en silencio</h3>
+              <p class="mt-1 text-lg text-suave">Dos horas leyendo juntos, sin hablar. Después, un café y una frase cada uno. Madrid, Parque del Retiro.</p>
+            </div>
+            <div class="sm:col-span-3 sm:text-right">
+              <a href="#contacto" data-motivo="Quiero apuntarme a un encuentro" data-mensaje="Me apunto a «Lectura en silencio» (14 de noviembre)." class="apuntarse inline-block font-sans text-sm font-medium rounded-full border border-tinta px-5 py-2.5 hover:bg-tinta hover:text-papel transition-colors">Me apunto</a>
+            </div>
+          </li>
+          <li class="py-8 border-b border-piedra grid sm:grid-cols-12 gap-4 sm:gap-8 items-baseline">
+            <p class="sm:col-span-3 font-sans text-sm"><span class="block text-2xl font-serif font-light">28 de noviembre</span><span class="text-suave">Sábado, 10:00</span></p>
+            <div class="sm:col-span-6">
+              <h3 class="text-2xl font-normal">Paseo sin móvil</h3>
+              <p class="mt-1 text-lg text-suave">Una ruta tranquila de 8 km. Los teléfonos se quedan en una caja al empezar. Sierra de Guadarrama.</p>
+            </div>
+            <div class="sm:col-span-3 sm:text-right">
+              <a href="#contacto" data-motivo="Quiero apuntarme a un encuentro" data-mensaje="Me apunto al «Paseo sin móvil» (28 de noviembre)." class="apuntarse inline-block font-sans text-sm font-medium rounded-full border border-tinta px-5 py-2.5 hover:bg-tinta hover:text-papel transition-colors">Me apunto</a>
+            </div>
+          </li>
+          <li class="py-8 border-b border-piedra grid sm:grid-cols-12 gap-4 sm:gap-8 items-baseline">
+            <p class="sm:col-span-3 font-sans text-sm"><span class="block text-2xl font-serif font-light">12 de diciembre</span><span class="text-suave">Sábado, 20:30</span></p>
+            <div class="sm:col-span-6">
+              <h3 class="text-2xl font-normal">Cena de la pregunta</h3>
+              <p class="mt-1 text-lg text-suave">Doce personas, una mesa y la pregunta del mes de la comunidad. Madrid, lugar por confirmar.</p>
+            </div>
+            <div class="sm:col-span-3 sm:text-right">
+              <a href="#contacto" data-motivo="Quiero apuntarme a un encuentro" data-mensaje="Me apunto a la «Cena de la pregunta» (12 de diciembre)." class="apuntarse inline-block font-sans text-sm font-medium rounded-full border border-tinta px-5 py-2.5 hover:bg-tinta hover:text-papel transition-colors">Me apunto</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ CONTACTO ============ -->
+    <section id="contacto" class="py-24 sm:py-32">
+      <div class="max-w-6xl mx-auto px-5 sm:px-8 grid lg:grid-cols-12 gap-12 lg:gap-16">
+        <div class="lg:col-span-5">
+          <h2 class="text-5xl sm:text-6xl font-light tracking-tight">Escríbenos</h2>
+          <p class="mt-6 text-xl leading-relaxed text-suave max-w-[32ch]">Para recibir el manifiesto completo, apuntarte a un encuentro o proponernos un tema. Respondemos sin prisa, pero respondemos.</p>
+          <p class="mt-8 font-sans text-sm text-suave">O directamente a <a class="text-tinta underline underline-offset-4" href="mailto:fpasc@proton.me">fpasc@proton.me</a></p>
+        </div>
+
+        <div class="lg:col-span-7">
+          <!-- El formulario envía los mensajes a fpasc@proton.me a través de FormSubmit -->
+          <form id="formulario" action="https://formsubmit.co/fpasc@proton.me" method="POST" class="space-y-8" novalidate>
+            <input type="hidden" name="_subject" value="Nuevo mensaje desde Habita">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <!-- Campo trampa contra robots: debe quedar vacío -->
+            <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off">
+
+            <div class="grid sm:grid-cols-2 gap-8">
+              <div>
+                <label for="nombre" class="font-sans text-sm text-suave">Nombre</label>
+                <input id="nombre" name="nombre" type="text" required autocomplete="name" class="campo" placeholder="Cómo te llamas">
+              </div>
+              <div>
+                <label for="email" class="font-sans text-sm text-suave">Correo electrónico</label>
+                <input id="email" name="email" type="email" required autocomplete="email" class="campo" placeholder="tu@correo.com">
+              </div>
+            </div>
+
+            <div>
+              <label for="motivo" class="font-sans text-sm text-suave">Motivo</label>
+              <select id="motivo" name="motivo" class="campo">
+                <option>Quiero recibir el manifiesto completo</option>
+                <option>Quiero apuntarme a un encuentro</option>
+                <option>Quiero que me aviséis de nuevos episodios</option>
+                <option>Quiero proponer un tema o una práctica</option>
+                <option>Otro</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="mensaje" class="font-sans text-sm text-suave">Mensaje</label>
+              <textarea id="mensaje" name="mensaje" rows="4" required class="campo resize-y" placeholder="Escribe con calma"></textarea>
+            </div>
+
+            <label class="flex items-start gap-3 font-sans text-sm text-suave">
+              <input id="acepto" name="acepta_privacidad" type="checkbox" value="sí" required class="mt-1 w-4 h-4 accent-[#56684F]">
+              <span>Acepto que Habita use mis datos solo para responder a este mensaje.</span>
+            </label>
+
+            <div class="flex flex-wrap items-center gap-6">
+              <button id="boton-enviar" type="submit" class="font-sans font-medium rounded-full bg-tinta text-papel px-8 py-4 hover:bg-musgo transition-colors disabled:opacity-60">Enviar mensaje</button>
+              <p id="estado" class="font-sans text-sm" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ PIE ============ -->
+  <footer class="border-t border-piedra py-12" style="padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row justify-between gap-6 font-sans text-sm text-suave">
+      <p><span class="font-serif text-2xl font-light text-tinta">Habita</span><br>Comprender sin ruido.</p>
+      <div class="sm:text-right space-y-1">
+        <p><a href="mailto:fpasc@proton.me" class="underline underline-offset-4">fpasc@proton.me</a></p>
+        <p>Imágenes: Freepik, vía Magnific</p>
+        <p>© <span id="anio"></span> Habita</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ RELOJ DE TIEMPO EN LA WEB ============ -->
+  <aside id="reloj" class="fixed z-50 right-4 sm:right-6 font-sans" style="bottom: calc(1rem + env(safe-area-inset-bottom, 0px));" aria-label="Tiempo que llevas en Habita">
+    <div id="aviso-reloj" class="hidden mb-3 max-w-[260px] ml-auto bg-tinta text-papel text-sm leading-snug rounded-2xl px-4 py-3 shadow-lg">
+      <p id="texto-aviso"></p>
+      <button id="cerrar-aviso" class="mt-2 underline underline-offset-4 text-xs">Entendido</button>
+    </div>
+    <div class="flex items-center gap-3 bg-papel border border-piedra rounded-full pl-4 pr-2 py-2 shadow-md">
+      <span class="w-2 h-2 rounded-full bg-musgo" aria-hidden="true"></span>
+      <div class="leading-tight">
+        <p class="text-[11px] text-suave">Llevas en Habita</p>
+        <p id="tiempo" class="text-base font-medium tabular-nums text-tinta">00:00</p>
+      </div>
+      <button id="ocultar-reloj" class="ml-1 w-7 h-7 rounded-full text-suave hover:bg-hondo" aria-label="Ocultar el reloj">×</button>
+    </div>
+  </aside>
+  <button id="mostrar-reloj" class="hidden fixed z-50 right-4 sm:right-6 font-sans text-xs bg-papel border border-piedra rounded-full px-3 py-2 text-suave shadow-md" style="bottom: calc(1rem + env(safe-area-inset-bottom, 0px));">Ver tiempo</button>
+
+  <script>
+    // ---------- Año del pie ----------
+    document.getElementById('anio').textContent = new Date().getFullYear();
+
+    // ---------- Cabecera: cambia de color al salir del hero ----------
+    const cabecera = document.getElementById('cabecera');
+    const hero = document.getElementById('inicio');
+    const claros = [document.getElementById('logo'), document.getElementById('menu-escritorio'), document.getElementById('boton-menu')];
+    function actualizarCabecera() {
+      const fuera = window.scrollY > hero.offsetHeight - 80;
+      cabecera.classList.toggle('bg-papel', fuera);
+      cabecera.classList.toggle('border-b', fuera);
+      cabecera.classList.toggle('border-piedra', fuera);
+      claros.forEach(el => {
+        el.classList.toggle('text-[#EEF1EC]', !fuera);
+        el.classList.toggle('text-tinta', fuera);
+      });
+    }
+    window.addEventListener('scroll', actualizarCabecera, { passive: true });
+    actualizarCabecera();
+
+    // ---------- Menú móvil ----------
+    const botonMenu = document.getElementById('boton-menu');
+    const menuMovil = document.getElementById('menu-movil');
+    botonMenu.addEventListener('click', () => {
+      const abierto = menuMovil.classList.toggle('hidden') === false;
+      botonMenu.setAttribute('aria-expanded', abierto);
+      botonMenu.textContent = abierto ? 'Cerrar' : 'Menú';
+      if (abierto) cabecera.classList.add('bg-papel');
+      else actualizarCabecera();
+    });
+    menuMovil.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      menuMovil.classList.add('hidden');
+      botonMenu.setAttribute('aria-expanded', 'false');
+      botonMenu.textContent = 'Menú';
+    }));
+
+    // ---------- Reloj: tiempo en la web (solo cuenta con la pestaña visible) ----------
+    let segundos = 0;
+    const tiempo = document.getElementById('tiempo');
+    const aviso = document.getElementById('aviso-reloj');
+    const textoAviso = document.getElementById('texto-aviso');
+    const avisos = {
+      300:  'Llevas cinco minutos aquí. ¿Qué tal si lees algo entero, sin saltar?',
+      900:  'Quince minutos. Buen momento para levantar la vista de la pantalla y mirar lejos.',
+      1800: 'Media hora en Habita. Quizá es momento de cerrar esta pestaña y salir a dar un paseo.'
+    };
+    function formato(s) {
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), seg = s % 60;
+      const dos = n => String(n).padStart(2, '0');
+      return h > 0 ? `${h}:${dos(m)}:${dos(seg)}` : `${dos(m)}:${dos(seg)}`;
+    }
+    setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      segundos++;
+      tiempo.textContent = formato(segundos);
+      if (avisos[segundos]) {
+        textoAviso.textContent = avisos[segundos];
+        aviso.classList.remove('hidden');
+      }
+    }, 1000);
+    document.getElementById('cerrar-aviso').addEventListener('click', () => aviso.classList.add('hidden'));
+    const reloj = document.getElementById('reloj');
+    const mostrarReloj = document.getElementById('mostrar-reloj');
+    document.getElementById('ocultar-reloj').addEventListener('click', () => {
+      reloj.classList.add('hidden'); mostrarReloj.classList.remove('hidden');
+    });
+    mostrarReloj.addEventListener('click', () => {
+      reloj.classList.remove('hidden'); mostrarReloj.classList.add('hidden');
+    });
+
+    // ---------- Ejercicio de respiración ----------
+    const circulo = document.getElementById('circulo');
+    const textoRespira = document.getElementById('texto-respira');
+    const botonRespira = document.getElementById('boton-respira');
+    const fases = [
+      { texto: 'Inspira', escala: 1.9, ms: 4000 },
+      { texto: 'Mantén',  escala: 1.9, ms: 4000 },
+      { texto: 'Suelta',  escala: 1.0, ms: 6000 }
+    ];
+    let respirando = false, temporizador = null, inicioRespira = 0;
+    function fase(i) {
+      if (!respirando) return;
+      if (Date.now() - inicioRespira > 60000 && i === 0) { pararRespira('Bien hecho'); return; }
+      const f = fases[i];
+      textoRespira.textContent = f.texto;
+      circulo.style.transitionDuration = f.ms + 'ms';
+      circulo.style.transform = `scale(${f.escala})`;
+      temporizador = setTimeout(() => fase((i + 1) % fases.length), f.ms);
+    }
+    function pararRespira(mensaje) {
+      respirando = false;
+      clearTimeout(temporizador);
+      circulo.style.transitionDuration = '1500ms';
+      circulo.style.transform = 'scale(1)';
+      textoRespira.textContent = mensaje;
+      botonRespira.textContent = 'Empezar a respirar';
+    }
+    botonRespira.addEventListener('click', () => {
+      if (respirando) { pararRespira('Listo'); return; }
+      respirando = true; inicioRespira = Date.now();
+      botonRespira.textContent = 'Parar';
+      fase(0);
+    });
+
+    // ---------- Botones que rellenan el formulario ----------
+    document.querySelectorAll('.apuntarse').forEach(boton => {
+      boton.addEventListener('click', () => {
+        if (boton.dataset.motivo) document.getElementById('motivo').value = boton.dataset.motivo;
+        if (boton.dataset.mensaje) document.getElementById('mensaje').value = boton.dataset.mensaje;
+      });
+    });
+
+    // ---------- Envío del formulario ----------
+    const formulario = document.getElementById('formulario');
+    const estado = document.getElementById('estado');
+    const botonEnviar = document.getElementById('boton-enviar');
+    formulario.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      estado.className = 'font-sans text-sm';
+
+      // Comprobaciones antes de enviar
+      const nombre = formulario.nombre.value.trim();
+      const email = formulario.email.value.trim();
+      const mensaje = formulario.mensaje.value.trim();
+      if (!nombre || !email || !mensaje) {
+        estado.textContent = 'Rellena tu nombre, tu correo y el mensaje.';
+        estado.classList.add('text-[#A0442F]'); return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        estado.textContent = 'Revisa el correo: falta la @ o el dominio.';
+        estado.classList.add('text-[#A0442F]'); return;
+      }
+      if (!formulario.acepto.checked) {
+        estado.textContent = 'Marca la casilla de privacidad para poder enviarlo.';
+        estado.classList.add('text-[#A0442F]'); return;
+      }
+
+      botonEnviar.disabled = true;
+      botonEnviar.textContent = 'Enviando…';
+      try {
+        const respuesta = await fetch('https://formsubmit.co/ajax/fpasc@proton.me', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(formulario)
+        });
+        if (!respuesta.ok) throw new Error('Respuesta ' + respuesta.status);
+        formulario.reset();
+        estado.textContent = 'Mensaje enviado. Te responderemos sin prisa.';
+        estado.classList.add('text-musgo');
+      } catch (error) {
+        estado.innerHTML = 'No se ha podido enviar. Escríbenos a <a class="underline" href="mailto:fpasc@proton.me">fpasc@proton.me</a>.';
+        estado.classList.add('text-[#A0442F]');
+      } finally {
+        botonEnviar.disabled = false;
+        botonEnviar.textContent = 'Enviar mensaje';
+      }
+    });
+  </script>
+</body>
+</html>
